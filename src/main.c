@@ -1,65 +1,52 @@
-#include <stdio.h>
-#include <string.h>
 #include "komponen.h"
+#include "ui.h"
+#include <stdio.h>
 
-void simpan_komponen(Komponen);
-void tampil_semua(int);
-int ubah_komponen(const char*, Komponen);
-int hapus_komponen(const char*);
+int main() {
+    int choice;
 
-void input_komponen(Komponen *k) {
-    printf("Masukkan Kode (6 digit): ");
-    scanf("%6s", k->kode); getchar();
-    printf("Masukkan Nama Komponen: ");
-    fgets(k->nama, 26, stdin);
-    k->nama[strcspn(k->nama, "\n")] = 0;
-    printf("Masukkan Stok: ");
-    scanf("%d", &k->stok);
-    printf("Masukkan Harga: ");
-    scanf("%f", &k->harga);
-}
-
-int main(){
     while (1) {
-        printf("\n=== Menu Komponen Kendaraan ===\n");
-        printf("1. Tambah Data\n");
-        printf("2. Ubah Data\n");
-        printf("3. Tampil Data (dengan Index)\n");
-        printf("4. Tampil Data (tanpa Index)\n");
-        printf("5. Hapus Data\n");
-        printf("6. Keluar\n");
-        printf("Pilih: ");
+        choice = getMenuChoice();
 
-        int pil;
-        scanf("%d", &pil); getchar();
-        if (pil == 1) {
+        if (choice == 1) {
+            clearScreen();
             Komponen k;
             input_komponen(&k);
-            simpan_komponen(k);
-        } else if (pil == 2) {
+            simpan_komponen(&k);
+
+        } else if (choice == 2) {
+            clearScreen();
             Komponen k;
             char kode[7];
             printf("Masukkan kode komponen yang ingin diubah: ");
-            scanf("%6s", kode); 
-                getchar();
+            scanf("%6s", kode);
             printf("Masukkan data baru:\n");
             input_komponen(&k);
-            if (!ubah_komponen(kode, k))
+            if (!ubah_komponen(kode, &k))
                 printf("Data tidak ditemukan.\n");
-        } else if (pil == 3) {
+
+        } else if (choice == 3) {
+            clearScreen();
             tampil_semua(1);
-        } else if (pil == 4) {
+
+        } else if (choice == 4) {
+            clearScreen();
             tampil_semua(0);
-        } else if (pil == 5) {
+
+        } else if (choice == 5) {
+            clearScreen();
             char kode[7];
-            printf("Masukkan kode yang akan dihapus: ");
-            scanf("%6s", kode); 
-                getchar();
+            printf("Masukkan kode komponen yang ingin dihapus: ");
+            scanf("%6s", kode);
             if (!hapus_komponen(kode))
                 printf("Data tidak ditemukan.\n");
-        } else if (pil == 6) break;
-        else printf("Pilihan tidak valid.\n");
+        } else if (choice == 6) {
+            clearScreen();
+            printf("Exiting\n");
+            return 0;
+        } else {
+            fprintf(stderr, "Pilihan tidak valid\n");
+        }
     }
-
     return 0;
 }

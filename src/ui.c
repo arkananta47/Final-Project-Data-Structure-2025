@@ -1,24 +1,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "ui.h"
 
-#include <termios.h>
-#include <unistd.h>
+const char *menuItems[MAX_MENU_ITEM] = {
+    "Menambah data",
+    "Mengubah data",
+    "Menampilkan semua data dengan index",
+    "Menampilkan semua data tanpa index",
+    "Hapus data",
+    "Keluar"
+};
 
-#define CLEAR_SCREEN "clear"
-#define ARROW_UP 65
-#define ARROW_DOWN 66
-#define ENTER 10
-#define ESCAPE 27
-
-#define SET_COLOR "\033[1;7m"
-#define RESET_COLOR "\033[0m"
-
-#define MAX_MENU_ITEM 6
-#define MAX_STRING_LENGTH 1024
-
-const char *menuItems[MAX_MENU_ITEM] = {"Menambah data", "Mengubah data", "Menampilkan semua data dengan index", "Menampilkan semua data tanpa index", "Hapus data", "Keluar"};
-
+#ifndef __WIN32
 struct termios sterm;
 void disableRawMode() { tcsetattr(STDIN_FILENO, TCSAFLUSH, &sterm); }
 
@@ -44,6 +38,7 @@ int getch() {
     }
     return ch;
 }
+#endif
 
 void clearScreen() { system(CLEAR_SCREEN); }
 
@@ -63,13 +58,23 @@ void displayMenu(int selected) {
 }
 
 int getMenuChoice() {
+#ifndef __WIN32
     enableRawMode();
+#endif
 
     int selected = 0;
     int ch;
+
     while (1) {
         displayMenu(selected);
+#ifdef __WIN32
+        ch = _getch();
+        if (ch == 224) {
+            ch == _getch();
+        }
+#else
         ch = getch();
+#endif
 
         switch (ch) {
         case ARROW_UP:
@@ -79,14 +84,20 @@ int getMenuChoice() {
             selected = (selected + 1) % MAX_MENU_ITEM;
             break;
         case ENTER:
+#ifndef __WIN32
             disableRawMode();
+#endif
             return selected + 1;
         case ESCAPE:
+#ifndef __WIN32
             disableRawMode();
+#endif
             return 6;
         case 'q':
         case 'Q':
+#ifndef __WIN32
             disableRawMode();
+#endif
             return 6;
         case '1':
         case '2':
@@ -100,65 +111,4 @@ int getMenuChoice() {
             break;
         }
     }
-}
-
-void addData() {
-    clearScreen();
-    printf("Ini addData\n");
-    printf("Tekan Enter untuk kembali...");
-    getchar();
-}
-
-void editData() {
-    clearScreen();
-    printf("Ini editData\n");
-    printf("Tekan Enter untuk kembali...");
-    getchar();
-}
-
-void displayData(int withIndex) {
-    clearScreen();
-    printf("Ini displayData dengan index: %d\n", withIndex);
-    printf("Tekan Enter untuk kembali...");
-    getchar();
-}
-
-void deleteData() {
-    clearScreen();
-    printf("Ini deleteData\n");
-    printf("Tekan Enter untuk kembali...");
-    getchar();
-}
-
-int main() {
-    int choice;
-
-    while (1) {
-        choice = getMenuChoice();
-        switch (choice) {
-        case 1:
-            addData();
-            break;
-        case 2:
-            editData();
-            break;
-        case 3:
-            displayData(1);
-            break;
-        case 4:
-            displayData(1);
-            break;
-        case 5:
-            deleteData();
-            break;
-        case 6:
-            clearScreen();
-            printf("Exiting\n");
-            return 0;
-        default:
-            break;
-        }
-    }
-
-    return 0;
 }

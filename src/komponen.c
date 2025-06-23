@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "komponen.h"
 
-#define FILE_NAME "data_komponen.bin"
-
-void simpan_komponen(Komponen k) {
+void simpan_komponen(Komponen *k) {
     FILE *fp = fopen(FILE_NAME, "ab");
-    fwrite(&k, sizeof(Komponen), 1, fp);
+    if (!fp) {
+        fprintf(stderr, "ERROR: failed to open file %s: %s\n", FILE_NAME, strerror(errno));
+        return;
+    }
+    fwrite(k, sizeof(Komponen), 1, fp);
     fclose(fp);
 }
 
@@ -35,7 +38,7 @@ void tampil_semua(int dengan_index) {
     fclose(fp);
 }
 
-int ubah_komponen(const char *kode_target, Komponen k_baru) {
+int ubah_komponen(const char *kode_target, Komponen *k_baru) {
     FILE *fp = fopen(FILE_NAME, "rb+");
     if (!fp) return 0;
 
@@ -43,7 +46,7 @@ int ubah_komponen(const char *kode_target, Komponen k_baru) {
     while (fread(&k, sizeof(Komponen), 1, fp)) {
         if (strcmp(k.kode, kode_target) == 0) {
             fseek(fp, -sizeof(Komponen), SEEK_CUR);
-            fwrite(&k_baru, sizeof(Komponen), 1, fp);
+            fwrite(k_baru, sizeof(Komponen), 1, fp);
             fclose(fp);
             return 1;
         }
@@ -55,6 +58,12 @@ int ubah_komponen(const char *kode_target, Komponen k_baru) {
 int hapus_komponen(const char *kode_target) {
     FILE *fp = fopen(FILE_NAME, "rb");
     FILE *temp = fopen("temp.bin", "wb");
+    if (!fp || !temp) {
+        if (fp) fclose(fp);
+        if (temp) fclose(temp);
+        return 0;
+    }
+
     int found = 0;
     Komponen k;
 
@@ -71,4 +80,16 @@ int hapus_komponen(const char *kode_target) {
     remove(FILE_NAME);
     rename("temp.bin", FILE_NAME);
     return found;
+}
+
+void input_komponen(Komponen *k) {
+    printf("Masukkan Kode (6 digit): ");
+    scanf("%6s", k->kode); getchar();
+    printf("Masukkan Nama Komponen: ");
+    fgets(k->nama, 26, stdin);
+    k->nama[strcspn(k->nama, "\n")] = 0;
+    printf("Masukkan Stok: ");
+    scanf("%d", &k->stok);
+    printf("Masukkan Harga: ");
+    scanf("%f", &k->harga);
 }
