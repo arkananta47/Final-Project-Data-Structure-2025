@@ -21,21 +21,49 @@ void tampil_semua(int dengan_index) {
         return;
     }
 
-    Komponen k;
-    int i = 0;
+    fseek(fp, 0, SEEK_END);
+    long size = ftell(fp);
+    rewind(fp);
+    int jumlah = size / sizeof(Komponen);
+
+    Komponen *list = malloc(sizeof(Komponen) * jumlah);
+    if (!list) {
+        printf("Gagal alokasi memori.\n");
+        fclose(fp);
+        return;
+    }
+
+    fread(list, sizeof(Komponen), jumlah, fp);
+    fclose(fp);
+
+    if (dengan_index) {
+        for (int i = 0; i < jumlah - 1; i++) {
+            for (int j = i + 1; j < jumlah; j++) {
+                if (strcmp(list[i].kode, list[j].kode) > 0) {
+                    Komponen temp = list[i];
+                    list[i] = list[j];
+                    list[j] = temp;
+                }
+            }
+        }
+    }
+
     float total = 0;
-    while (fread(&k, sizeof(Komponen), 1, fp)) {
-        if (dengan_index) printf("[%02d] ", i);
-        printf("Kode: %s | Nama: %s | Stok: %d | Harga: %.2f\n", k.kode, k.nama, k.stok, k.harga);
-        total += k.stok * k.harga;
-        i++;
-        if (i % 10 == 0) {
+    for (int i = 0; i < jumlah; i++) {
+        if (dengan_index)
+            printf("[%s] ", list[i].kode);
+        printf("Kode: %s | Nama: %s | Stok: %d | Harga: %.2f\n", 
+               list[i].kode, list[i].nama, list[i].stok, list[i].harga);
+        total += list[i].stok * list[i].harga;
+
+        if ((i + 1) % 10 == 0) {
             printf("Tekan enter untuk lanjut...\n");
             getchar();
         }
     }
+
     printf("Total nilai aset: %.2f\n", total);
-    fclose(fp);
+    free(list);
 }
 
 int ubah_komponen(const char *kode_target, Komponen *k_baru) {
