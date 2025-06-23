@@ -13,6 +13,7 @@ int main() {
             Komponen k;
             input_komponen(&k);
             simpan_komponen(&k);
+            getchar(); // debug
 
         } else if (choice == 2) {
             clearScreen();
@@ -20,18 +21,21 @@ int main() {
             char kode[7];
             printf("Masukkan kode komponen yang ingin diubah: ");
             scanf("%6s", kode);
-            printf("Masukkan data baru:\n");
+            printf("\nMasukkan data baru\n");
             input_komponen(&k);
             if (!ubah_komponen(kode, &k))
                 printf("Data tidak ditemukan.\n");
+            getchar(); // debug
 
         } else if (choice == 3) {
             clearScreen();
             tampil_semua(1);
+            getchar();
 
         } else if (choice == 4) {
             clearScreen();
             tampil_semua(0);
+            getchar();
 
         } else if (choice == 5) {
             clearScreen();
@@ -40,6 +44,7 @@ int main() {
             scanf("%6s", kode);
             if (!hapus_komponen(kode))
                 printf("Data tidak ditemukan.\n");
+            getchar(); // debug
         } else if (choice == 6) {
             clearScreen();
             printf("Exiting\n");

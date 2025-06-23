@@ -52,7 +52,7 @@ void tampil_semua(int dengan_index) {
     for (int i = 0; i < jumlah; i++) {
         if (dengan_index)
             printf("[%s] ", list[i].kode);
-        printf("Kode: %s | Nama: %s | Stok: %d | Harga: %.2f\n", 
+        printf("Kode: %s | Nama: %s | Stok: %d | Harga: %.2f\n",
                list[i].kode, list[i].nama, list[i].stok, list[i].harga);
         total += list[i].stok * list[i].harga;
 
