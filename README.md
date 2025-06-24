@@ -25,3 +25,8 @@ $ make
 $ ./bin/main
 ```
 
+### Credit
+|NRP|Name|
+|:--:|:--:|
+|5025241161|Muh. Aqil Alqadri Syahid|
+|5025241155|Jalu Cahyo Senodiputro|
