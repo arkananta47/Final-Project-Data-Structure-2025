@@ -1,6 +1,22 @@
-# fiw
+# Data Structure 2025 Final Project
+Database for car & bike spareparts written fully in c without dependencies
 
-## How to use
+## Feature
+1. Add new data
+2. Change existing data
+3. List all entry with/without indexing
+4. Erase data
+
+## Overview
+`data_komponen.bin`: Binary file used to store the data
+
+`ui.c`: Control the UI
+
+`komponen.c`: Logic to store & view the data
+
+`main.c`: Main program
+
+## How to run
 ```bash
 $ make
 $ ./bin/main
