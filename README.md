@@ -1,4 +1,7 @@
 # Data Structure 2025 Final Project
+
+![main menu](/assets/main_menu.png)
+
 Database for car & bike spareparts written fully in c without dependencies
 
 ## Feature
