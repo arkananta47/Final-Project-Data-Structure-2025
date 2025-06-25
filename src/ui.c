@@ -12,6 +12,12 @@ const char *menuItems[MAX_MENU_ITEM] = {
     "Keluar"
 };
 
+#ifdef __WIN32
+#define SET_COLOR ""
+#define RESET_COLOR ""
+#define ESCAPE 27
+#endif
+
 #ifndef __WIN32
 struct termios sterm;
 void disableRawMode() { tcsetattr(STDIN_FILENO, TCSAFLUSH, &sterm); }
@@ -70,7 +76,7 @@ int getMenuChoice() {
 #ifdef __WIN32
         ch = _getch();
         if (ch == 224) {
-            ch == _getch();
+            ch = _getch();
         }
 #else
         ch = getch();

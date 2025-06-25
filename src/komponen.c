@@ -73,7 +73,7 @@ int ubah_komponen(const char *kode_target, Komponen *k_baru) {
     Komponen k;
     while (fread(&k, sizeof(Komponen), 1, fp)) {
         if (strcmp(k.kode, kode_target) == 0) {
-            fseek(fp, -sizeof(Komponen), SEEK_CUR);
+            fseek(fp, -(long)sizeof(Komponen), SEEK_CUR); // Cast to signed type
             fwrite(k_baru, sizeof(Komponen), 1, fp);
             fclose(fp);
             return 1;

@@ -6,27 +6,42 @@ BIN_DIR := bin
 DEBUG ?= 0
 CFLAGS := -Wall -Wextra -Wpedantic
 OPTIMIZATION := -O2
-INCLUDE_FLAGS := -Iinclude
+INCLUDE_FLAGS := -I$(INCLUDE_DIR)
 
-OBJS := $(patsubst %.c,%.o, $(wildcard $(SRC_DIR)/*.c))
+# Get all source files and generate corresponding object paths
+SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 
-ifeq ($(debug), 1)
-	CFLAGS := $(CFLAGS) -g
+ifeq ($(DEBUG), 1)
+	CFLAGS += -g
 endif
 
-main: $(OBJS)
-	gcc $(CFLAGS) $(OPTIMIZATION) $(INCLUDE_FLAGS) -o $(BIN_DIR)/$@ $(patsubst %, build/%, $(OBJS))
+# Main target - link all object files
+main: $(OBJ_FILES) | dir
+	gcc $(CFLAGS) $(OPTIMIZATION) $(INCLUDE_FLAGS) -o $(BIN_DIR)/$@ $^
 
-$(OBJS): dir
-	@mkdir -p $(BUILD_DIR)/$(@D)
-	gcc $(CFLAGS) $(OPTIMIZATION) $(INCLUDE_FLAGS) -o $(BUILD_DIR)/$@ -c $*.c
+# Rule for building object files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | dir
+	gcc $(CFLAGS) $(OPTIMIZATION) $(INCLUDE_FLAGS) -c $< -o $@
 
 # Setup build and bin directories
 dir:
-	@mkdir -p $(BUILD_DIR) $(BIN_DIR)
+ifeq ($(OS),Windows_NT)
+	@if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"
+	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
+else
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BIN_DIR)
+endif
 
 # Clean build and bin directories
 clean:
-	@rm -rf $(BUILD_DIR) $(BIN_DIR)
+ifeq ($(OS),Windows_NT)
+	if exist "$(BUILD_DIR)" rmdir /S /Q "$(BUILD_DIR)"
+	if exist "$(BIN_DIR)" rmdir /S /Q "$(BIN_DIR)"
+else
+	rm -rf $(BUILD_DIR) $(BIN_DIR)
+endif
 
-.PHONY: dir clean
+.PHONY:
+	dir clean
