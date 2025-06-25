@@ -26,12 +26,22 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | dir
 
 # Setup build and bin directories
 dir:
-	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	@if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+ifeq ($(OS),Windows_NT)
+	@if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"
+	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
+else
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BIN_DIR)
+endif
 
 # Clean build and bin directories
 clean:
-	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)
-	@if exist $(BIN_DIR) rmdir /s /q $(BIN_DIR)
+ifeq ($(OS),Windows_NT)
+	if exist "$(BUILD_DIR)" rmdir /S /Q "$(BUILD_DIR)"
+	if exist "$(BIN_DIR)" rmdir /S /Q "$(BIN_DIR)"
+else
+	rm -rf $(BUILD_DIR) $(BIN_DIR)
+endif
 
-.PHONY: dir clean
+.PHONY:
+	dir clean
